@@ -1,0 +1,213 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "A template for assignment 3-1-1",
+    "Resources": {
+        "EcsCluster": {
+            "Type": "AWS::ECS::Cluster",
+            "Properties": {
+                "ClusterName": "assignment-3-1-1"
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "a1e7cbe9-2c63-4e64-b202-80b006d886a4"
+                }
+            }
+        },
+        "TaskDefinition": {
+            "Type": "AWS::ECS::TaskDefinition",
+            "Properties": {
+                "Cpu": 10,
+                "NetworkMode": "awsvpc",
+                "RequiresCompatibilities": ["FARGATE"],
+                "ContainerDefinitions": [
+                    {
+                        "Name": "nginx",
+                        "Image": "nginx",
+                        "Cpu": 10,
+                        "Memory": 500,
+                        "Essential": true
+                    }
+                ]
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "4ed8019a-f374-40b6-9ee3-cf56b59a673a"
+                }
+            }
+        },
+        "LoadBalancer": {
+            "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+            "Properties": {
+                "Scheme": "internet-facing",
+                "SecurityGroups": [
+                    "sg-09c98521c65f84a21"
+                ],
+                "SubnetMappings": [
+                    {
+                        "SubnetId": "subnet-0f7e8ccb7fedb2a3e"
+                    },
+                    {
+                        "SubnetId": "subnet-06ee353aa642bf3d8"
+                    }
+                ]
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "fe98eb5e-92ee-4667-b342-93440431d519"
+                }
+            }
+        },
+        "TargetGroup": {
+            "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+            "Properties": {
+                "Protocol": "HTTP",
+                "Port": 80,
+                "VpcId": "vpc-05ea78e649a314793"
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "d2800024-8f16-46c6-8b74-ae12d0aadf0c"
+                }
+            }
+        },
+        "Listener": {
+            "Type": "AWS::ElasticLoadBalancingV2::Listener",
+            "Properties": {
+                "Port": 80,
+                "Protocol": "HTTP",
+                "DefaultActions": [
+                    {
+                        "TargetGroupArn": {
+                            "Ref": "TargetGroup"
+                        },
+                        "Type": "forward"
+                    }
+                ],
+                "LoadBalancerArn": {
+                    "Ref": "LoadBalancer"
+                }
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "b365265f-dc2f-43d7-8aa7-75b5f1dcf243"
+                }
+            }
+        },
+        "EcsService": {
+            "Type": "AWS::ECS::Service",
+            "DependsOn": "Listener",
+            "Properties": {
+                "LaunchType": "FARGATE",
+                "NetworkConfiguration": {
+                    "AwsvpcConfiguration": {
+                        "SecurityGroups": [
+                            "sg-09c98521c65f84a21"
+                        ],
+                        "Subnets": [
+                            "subnet-0f7e8ccb7fedb2a3e"
+                        ]
+                    }
+                },
+                "LoadBalancers": [
+                    {
+                        "TargetGroupArn": {
+                            "Ref": "TargetGroup"
+                        },
+                        "ContainerPort": 80,
+                        "ContainerName": "assignments-3-1-1"
+                    }
+                ],
+                "TaskDefinition": {
+                    "Ref": "TaskDefinition"
+                },
+                "Cluster": {
+                    "Ref": "EcsCluster"
+                }
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "28434f33-85c4-4c38-bc33-85425c622448"
+                }
+            }
+        }
+    },
+    "Metadata": {
+        "AWS::CloudFormation::Designer": {
+            "d2800024-8f16-46c6-8b74-ae12d0aadf0c": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 60,
+                    "y": 90
+                },
+                "z": 1,
+                "embeds": []
+            },
+            "fe98eb5e-92ee-4667-b342-93440431d519": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 180,
+                    "y": 90
+                },
+                "z": 1,
+                "embeds": []
+            },
+            "b365265f-dc2f-43d7-8aa7-75b5f1dcf243": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 60,
+                    "y": 210
+                },
+                "z": 1,
+                "embeds": []
+            },
+            "4ed8019a-f374-40b6-9ee3-cf56b59a673a": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 180,
+                    "y": 210
+                },
+                "z": 1,
+                "embeds": []
+            },
+            "a1e7cbe9-2c63-4e64-b202-80b006d886a4": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 300,
+                    "y": 90
+                },
+                "z": 1,
+                "embeds": []
+            },
+            "28434f33-85c4-4c38-bc33-85425c622448": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 300,
+                    "y": 210
+                },
+                "z": 1,
+                "embeds": [],
+                "dependson": [
+                    "b365265f-dc2f-43d7-8aa7-75b5f1dcf243"
+                ]
+            }
+        }
+    }
+}
