@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: kaniko
+spec:
+  serviceAccount: jenkins
+  containers:
+    - name: aws-cdk
+      image: contino/aws-cdk
+      command:
+        - cat
+      tty: true
